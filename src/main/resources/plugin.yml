@@ -1,0 +1,39 @@
+name: ${project.name}
+main: ${mainClass}
+description: ${project.description}
+version: ${project.version}
+author: SwiftLee
+authors: [GregZ_]
+website: ${website}
+
+commands:
+    bungeesigns:
+        description: This is the main Bungee Signs command.
+        usage: /bungeesigns
+        
+permissions:
+    bungeesigns.*:
+        description: Gives access to all bungee signs commands and to break status signs.
+        default: op
+        children:
+            bungeesigns.remove: true
+            bungeesigns.create: true
+            bungeesigns.reload.*: true
+    bungeesigns.remove:
+        description: Allows you remove status signs.
+        default: op
+    bungeesigns.create:
+        description: Allows you create status signs.
+        default: op
+    bungeesigns.reload.*:
+        description: Allows you to reload the status signs config and database.
+        default: op
+        children:
+            bungeesigns.reload.config: true
+            bungeesigns.reload.database: true
+    bungeesigns.reload.config:
+        description: Allows you to reload the status signs config.
+        default: op
+    bungeesigns.reload.database:
+        description: Allows you to reload the status signs database.
+        default: op

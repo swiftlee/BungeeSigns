@@ -1,0 +1,19 @@
+name: RoyalMC_BungeeSigns
+main: org.royalmc.BungeeSigns.BGS_Main
+version: 1.0
+author: SwiftLee
+website: play.royalmc.org
+description: BungeeSigns plugin for RoyalMC.
+
+commands:
+ createSign:
+           description: Adds a Bungeecord status sign.
+           usage: /createSign
+ reloadColorConfig:
+           description: Reloads the Color Config.
+           usage: /reloadColorConfig
+           aliases: [rcc]
+ reloadSignsConfig:
+           description: Reloads main plugin config.
+           usage: /reloadSignsConfig
+           aliases: [rsc]

@@ -1,0 +1,10 @@
+presets:
+    lines:
+        1: '&8[&aJoin&8]'
+        2: '%STATUS%'
+        3: '%SERVER-NAME%'
+        4: '&6%ONLINE%&8/&6%MAX-PLAYERS%'
+    status:
+        online: '&aONLINE'
+        offline: '&cOFFLINE'
+isUHCServer: false

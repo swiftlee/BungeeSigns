@@ -1,0 +1,6 @@
+Signs:
+  minigame:
+    location: lobby,20,94,75
+    ip: localhost
+    port: 25567
+    server: minigame
