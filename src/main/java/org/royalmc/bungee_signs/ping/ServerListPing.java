@@ -1,5 +1,7 @@
 package org.royalmc.bungee_signs.ping;
 
+import com.google.gson.Gson;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -8,8 +10,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-
-import com.google.gson.Gson;
 
 public class ServerListPing {
 

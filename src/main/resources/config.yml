@@ -7,4 +7,3 @@ presets:
     status:
         online: '&aONLINE'
         offline: '&cOFFLINE'
-isUHCServer: false

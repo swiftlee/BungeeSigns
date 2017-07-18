@@ -1,9 +1,7 @@
 package org.royalmc.bungee_signs;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.util.HashMap;
+import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteStreams;
 
 import org.bukkit.Bukkit;
 import org.bukkit.block.Sign;
@@ -17,107 +15,107 @@ import org.royalmc.bungee_signs.sign.SignManager;
 import org.royalmc.bungee_signs.sign.StatusSign;
 import org.royalmc.bungee_signs.storage.YMLManager;
 
-import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteStreams;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.util.HashMap;
 
 public class BungeeSigns extends JavaPlugin implements PluginMessageListener {
 
-	private YMLManager ymlManager;
-	private SignManager signManager;
-	
-	public static HashMap<StatusSign, Boolean> signInProgress = new HashMap<>(); // need to find a better method
+    public static HashMap<StatusSign, Boolean> signInProgress = new HashMap<>(); // need to find a better method
+    private YMLManager ymlManager;
+    private SignManager signManager;
 
-	@Override
-	public void onEnable() {
-		Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-		Bukkit.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", this);
+    @Override
+    public void onEnable() {
+        Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+        Bukkit.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", this);
 
-		ymlManager = new YMLManager(this);
-		signManager = new SignManager(this);
+        ymlManager = new YMLManager(this);
+        signManager = new SignManager(this);
 
-		getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
-		getCommand("bungeesigns").setExecutor(new CommandBS(this));
-	}
+        getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+        getCommand("bungeesigns").setExecutor(new CommandBS(this));
+    }
 
-	@Override
-	public void onDisable() {
-		signInProgress.clear();
-	}
+    @Override
+    public void onDisable() {
+        signInProgress.clear();
+    }
 
-	public YMLManager getYmlManager() {
-		return ymlManager;
-	}
+    public YMLManager getYmlManager() {
+        return ymlManager;
+    }
 
-	public SignManager getSignManager() {
-		return signManager;
-	}
+    public SignManager getSignManager() {
+        return signManager;
+    }
 
-	@Override
-	public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-		if (!channel.equals("BungeeCord"))
-			return;
+    @Override
+    public void onPluginMessageReceived(String channel, Player player, byte[] message) {
+        if (!channel.equals("BungeeCord"))
+            return;
 
-		ByteArrayDataInput in = ByteStreams.newDataInput(message);
+        ByteArrayDataInput in = ByteStreams.newDataInput(message);
 
-		@SuppressWarnings("unused")
-		String subChannel = in.readUTF();
-		short len = in.readShort();
-		byte[] msgbytes = new byte[len];
-		in.readFully(msgbytes);
+        String subChannel = in.readUTF();
+        short len = in.readShort();
+        byte[] msgbytes = new byte[len];
+        in.readFully(msgbytes);
 
-		DataInputStream msgin = new DataInputStream(new ByteArrayInputStream(msgbytes));
-		try {
-			String gameState = msgin.readUTF();
-			String serverName = msgin.readUTF();
-			msgin.readShort();
+        DataInputStream msgin = new DataInputStream(new ByteArrayInputStream(msgbytes));
+        try {
+            String gameState = msgin.readUTF();
+            String serverName = msgin.readUTF();
+            msgin.readShort();
 
-			if (gameState.equalsIgnoreCase("isjoinable")) {
+            if (gameState.equalsIgnoreCase("isjoinable")) {
 
-				// update sign
-				ConfigurationSection signsSection = this.ymlManager.getDatabaseFile().getConfigurationSection("Signs");
-				String signName = "";
+                // update sign
+                ConfigurationSection signsSection = this.ymlManager.getDatabaseFile().getConfigurationSection("Signs");
+                String signName;
 
-				for (String keys : signsSection.getKeys(false)) {
-					if (keys.equalsIgnoreCase(serverName)) {
-						signName = serverName;
-						StatusSign s = signManager.getSign(signName);
-						Sign b = s.getSign();
+                for (String keys : signsSection.getKeys(false)) {
+                    if (keys.equalsIgnoreCase(serverName)) {
+                        signName = serverName;
+                        StatusSign s = signManager.getSign(signName);
+                        Sign b = s.getSign();
 
-						b.setLine(1, SignManager.formatText("&8In Queue"));
+                        b.setLine(1, SignManager.formatText("&8In Queue"));
 
-						if (signInProgress.containsKey(s))
-							signInProgress.replace(s, false);
-						else
-							signInProgress.put(s, false);
+                        if (signInProgress.containsKey(s))
+                            signInProgress.replace(s, false);
+                        else
+                            signInProgress.put(s, false);
 
-						signManager.update(s);
-					}
-				}
-			} else if (gameState.equalsIgnoreCase("notjoinable")) {
-				// update sign
-				ConfigurationSection signsSection = this.ymlManager.getDatabaseFile().getConfigurationSection("Signs");
-				String signName = "";
+                        signManager.update(s);
+                    }
+                }
+            } else if (gameState.equalsIgnoreCase("notjoinable")) {
+                // update sign
+                ConfigurationSection signsSection = this.ymlManager.getDatabaseFile().getConfigurationSection("Signs");
+                String signName;
 
-				for (String keys : signsSection.getKeys(false)) {
-					if (keys.equalsIgnoreCase(serverName)) {
+                for (String keys : signsSection.getKeys(false)) {
+                    if (keys.equalsIgnoreCase(serverName)) {
 
-						signName = serverName;
-						StatusSign s = signManager.getSign(signName);
-						Sign b = s.getSign();
+                        signName = serverName;
+                        StatusSign s = signManager.getSign(signName);
+                        Sign b = s.getSign();
 
-						b.setLine(1, SignManager.formatText("&8In Progress"));
+                        b.setLine(1, SignManager.formatText("&8In Progress"));
 
-						if (signInProgress.containsKey(s))
-							signInProgress.replace(s, true);
-						else
-							signInProgress.put(s, true);
+                        if (signInProgress.containsKey(s))
+                            signInProgress.replace(s, true);
+                        else
+                            signInProgress.put(s, true);
 
-						signManager.update(s);
-					}
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+                        signManager.update(s);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
